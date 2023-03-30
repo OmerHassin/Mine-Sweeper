@@ -9,11 +9,24 @@
 </head>
 <body onload="onInit()">
     <h1>Mine Sweeper</h1>
-    <div class="board">
-    </div>
+    <button class="Smiley button" onclick="onSmileyClick()"></button>
+    <div class="Lives">Lives Left: </div>
+    <div class="board"></div>
 
     <script src="js/utils.js"></script>
     <script src="js/main.js"></script>
 </body>
+<div class="Timer">00:00</div>
+<div>
+    <button class="BEGINNER" onclick="onLevelClick(this)">BEGINNER</button>
+    <button class="MEDIUM" onclick="onLevelClick(this)">MEDIUM</button>
+    <button class="EXPERT" onclick="onLevelClick(this)">EXPERT</button>
+</div>
+<button class="Dark-Mode-Btn button" onclick="onDarkModeClick()">Dark Mode: OFF</button>
 <footer>Omer Hassin</footer>
+
+<div class="modal">
+    <h3 class="msg"></h3>
+    <button class="restart-btn" onclick="onInit()">Play Again</button>
+</div>
 </html>

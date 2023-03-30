@@ -1,58 +1,26 @@
 'use strict'
 
-/*******************************/
-/*Matrix methods*/
-/*******************************/
+/*board*/
+function buildBoard() {
+  const size = gLevel.size;
+  const board = []
 
-/*********************/
-/*Create*/
-/*********************/
-function createMat(ROWS, COLS) {
-  const mat = []
-  for (var i = 0; i < ROWS; i++) {
-    const row = []
-    for (var j = 0; j < COLS; j++) {
-      row.push('')
-    }
-    mat.push(row)
+  for (var i = 0; i < size; i++) {
+      board[i] = [];
+      for (var j = 0; j < size; j++) {
+          board[i][j] = getCell(i, j);
+      }
   }
-  return mat
+
+  return board;
 }
 
-function createRandomNumsMat(ROWS, COLS) {
-  const nums = getRandomOrderNumbersArray(ROWS * COLS)
-  const mat = []
-  for (var i = 0; i < ROWS; i++) {
-    const row = []
-    for (var j = 0; j < COLS; j++) {
-      row.push(nums[i * COLS + j])
-    }
-    mat.push(row)
-  }
-  return mat
+function getClassName(i, j) {
+  return `cell-${i}-${j}`;
 }
 
-//Get string and matrix
-//Put the string in the matrix in random places for AMOUNT times
-
-//putStringAmountTimesInMat
-//putRandomNumberOfStringInMat
-function putStringAmountTimesInMat(MAT, STRING, AMOUNT) {
-  if (AMOUNT > MAT.length * MAT[0].length) return
-  for (var i = 0; i < AMOUNT; i++) {
-    var row = getRandomInt(0, MAT.length)
-    var col = getRandomInt(0, MAT[0].length)
-    if (MAT[row][col] === STRING) {
-      i--
-    } else {
-      MAT[row][col] = STRING
-    }
-  }
-}
-
-/*********************/
 /*Find*/
-/*********************/
+
 function getAmountOfNeighboursContaining(BOARD, ROW, COL) {
   var amount = 0
   for (var i = ROW - 1; i <= ROW + 1; i++) {
@@ -75,9 +43,21 @@ function getAmountOfCellsContaining(BOARD, ITEM) {
   return amount
 }
 
-/*******************************/
+function getEmptyLocation(board) {
+  var emptyLocations = []
+  for (var i = 0; i < board.length; i++) {
+      for (var j = 0; j < board[0].length; j++) {
+          if (!board[i][j].isClicked) {
+              emptyLocations.push({ i, j })
+          }
+      }
+  }
+  if (!emptyLocations.length) return null
+  var randIdx = getRandomInt(0, emptyLocations.length)
+  return emptyLocations[randIdx]
+}
+
 /*Random*/
-/*******************************/
 
 function getRandomInt(min, max) {
   min = Math.ceil(min)
@@ -85,70 +65,69 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min) + min)
 }
 
-function getRandomColor() {
-  var letters = '0123456789ABCDEF'
-  var color = '#'
-  for (var i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)]
+function addRandomMines(board, numOfMines, firstClickPos) {
+  for(var i = 0; i < numOfMines; i++){
+      const randomLocation = getEmptyLocation(board);
+      if(board[randomLocation.i][randomLocation.j].isMine ||
+          randomLocation.i === firstClickPos.i &&
+          randomLocation.j === firstClickPos.j){
+          i--;
+      } else{
+          board[randomLocation.i][randomLocation.j].isMine = true;
+          gMines.push(randomLocation);
+      }
+      //not working - not the same object reference
+      // if(!gMines.includes(board[randomLocation.i][randomLocation.j])) gMines.push(randomLocation);
   }
-  return color
 }
 
-function getRandomOrderNumbersArray(MAX) {
-  const nums = getArrayWithAscNums(MAX)
-  var res = []
-  for (var i = 0; i < MAX; i++) {
-    res[i] = drawNum(nums)
-  }
-  return res
-}
-
-function getArrayWithAscNums(MAX) {
-  var numbers = []
-  for (var i = 0; i < MAX; i++) {
-    numbers[i] = i + 1
-  }
-  return numbers
-}
-
-/*******************************/
 /*Render*/
-/*******************************/
 
-function renderBoard(mat, selector) {
-  var strHTML = '<table><tbody>'
-  for (var i = 0; i < mat.length; i++) {
-    strHTML += '<tr>'
-    for (var j = 0; j < mat[0].length; j++) {
-      const cell = mat[i][j]
-      const className = `cell cell-${i}-${j}`
-
-      strHTML += `<td class="${className}">${cell}</td>`
-    }
-    strHTML += '</tr>'
+function printBoard(board) {
+  const res = [];
+  
+  for(var i = 0; i < board.length; i++){
+      res[i] = [];
+      for(var j = 0; j < board.length; j++){
+          if(board[i][j].isMine){
+              res[i][j] = `${board[i][j].isMine} M`;
+          }else{
+              res[i][j] = board[i][j].isMine;
+          }
+      }
   }
-  strHTML += '</tbody></table>'
 
-  const elContainer = document.querySelector(selector)
-  elContainer.innerHTML = strHTML
+  console.table(res);
 }
 
-function renderBoardByObjProperty(mat, selector, property) {
-  var strHTML = '<table><tbody>'
-  for (var i = 0; i < mat.length; i++) {
-    strHTML += '<tr>'
-    for (var j = 0; j < mat[0].length; j++) {
-      const cell = mat[i][j][property]
-      const className = `cell cell-${i}-${j}`
+function renderBoard(board) {
+  var strHTML = '<table>\n<tbody>\n';
+  for (var i = 0; i < board.length; i++) {
+    strHTML += '<tr>\n';
+    for (var j = 0; j < board.length; j++) {
+      const className = getClassName(i, j);
 
-      strHTML += `<td class="${className}">${cell}</td>`
+      strHTML += `<td class="cell ${className}" oncontextmenu="onCellMarked(this,${i},${j})" onclick="onCellClicked(this,${i},${j})">`;
+      strHTML += '</td>\n';
     }
-    strHTML += '</tr>'
+    strHTML += '</tr>\n';
   }
-  strHTML += '</tbody></table>'
+  strHTML += '</tbody>\n</table>\n';
 
-  const elContainer = document.querySelector(selector)
-  elContainer.innerHTML = strHTML
+  const elBoard = document.querySelector('.board');
+  elBoard.innerHTML = strHTML;
+}
+
+function openModal(msg) {
+  const elModal = document.querySelector('.modal')
+  const elH3 = elModal.querySelector('.msg')
+  elH3.innerText = msg;
+  elModal.style.display = 'block';
+}
+
+function closeModal() {
+  const elModal = document.querySelector('.modal');
+  elModal.style.display = 'none';
 }
 
 // location is an object like this - { i: 2, j: 7 }
@@ -157,10 +136,20 @@ function renderCell(location, value) {
   const elCell = document.querySelector(`.cell-${location.i}-${location.j}`)
   elCell.innerHTML = value
 }
-/*******************************/
-/*Misc*/
-/*******************************/
 
-function drawNum(NUMS) {
-  return NUMS.splice(getRandomInt(0, NUMS.length), 1)[0]
+function renderLives() {
+  const elLives = document.querySelector('.Lives');
+  elLives.innerHTML = `Lives Left: ${gLives}`;
+}
+
+function renderSmileyBtn(img) {
+  const elSmileyBtn = document.querySelector('.Smiley');
+  elSmileyBtn.innerHTML = img;
+}
+
+//sound
+
+function playSound(audioSource) {
+  var sound = new Audio(audioSource);
+  sound.play();
 }

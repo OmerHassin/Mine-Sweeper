@@ -1,5 +1,22 @@
+*{
+  user-select: none;
+}
+
 body {
   text-align: center;
+  cursor: pointer;
+}
+
+body.Dark-Mode{
+  background-color: black;
+}
+
+h1{
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1.Dark-Mode{
+  color: white;
 }
 
 table {
@@ -12,8 +29,87 @@ table {
   height: 50px;
 }
 
+.cell:hover{
+  background-color: rgb(224, 224, 224);
+}
+
+.clicked{
+  background-color: rgb(212, 136, 35);
+}
+
+.marked{
+  background-color: black;
+}
 
 .cell img {
   width: 25px;
   height: auto;
+}
+
+.Smiley{
+  background-color: grey;
+  height: 80px;
+  width: 80px;
+  font-size: xx-large;
+  text-align: center;
+  border-radius: 50%;
+}
+
+.Dark-Mode.Smiley{
+  background-color: white;
+}
+
+.Lives{
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: x-large;
+  margin-top: 10px;
+}
+
+.Timer{
+  margin-top: 15px;
+  font-size: xx-large;
+}
+
+button{
+  margin-top: 15px;
+  background-color: grey;
+  color: white;
+}
+
+.Dark-Mode.Timer{
+  color: white;
+}
+
+.Dark-Mode.Lives{
+  color: white;
+}
+
+footer{
+  margin-top: 100px;
+}
+
+footer.Dark-Mode{
+  color: white;
+}
+
+.modal {
+  display: none;
+  border: solid 3px grey;
+  width: 300px;
+  height: 200px;
+  background-color: rgb(222, 226, 228);
+  color: black;
+  font-size: 32px;
+
+  position: absolute;
+  top: 210px;
+  left: calc(50% - 150px);
+}
+
+.restart-btn {
+  margin-top: 20px;
+  background-color: black;
+  color: rgb(230, 221, 221);
+  padding: 10px;
+  cursor: pointer;
 }
